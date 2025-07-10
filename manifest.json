@@ -1,0 +1,12 @@
+{
+  "manifest_version": 3,
+  "name": "Simple Tab Manager by Dan",
+  "version": "1.0",
+  "description": "View, switch, and close your tabs easily.",
+  "permissions": ["tabs"],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": "dandadan.png"
+  },
+  "host_permissions": ["<all_urls>"]
+}
