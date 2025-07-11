@@ -1,32 +1,61 @@
 document.addEventListener("DOMContentLoaded", async () => {
   const tabList = document.getElementById("tab-list");
   const searchInput = document.getElementById("search");
+  const toggleBtn = document.getElementById("toggle-scope");
 
-  const tabs = await chrome.tabs.query({});
-  
+  let tabs = await chrome.tabs.query({});
+  let showAllWindows = true;
 
-  tabs.forEach(tab => {
-    const li = document.createElement("li");
+  function renderTabs() {
+    tabList.innerHTML = ""; // Clear existing list
+    tabs.forEach(tab => {
+      const li = document.createElement("li");
 
-    const link = document.createElement("a");
-    link.textContent = tab.title;
-    link.href = "#";
-    // link.onclick = () => chrome.tabs.update(tab.id, { active: true });
+      const favicon = document.createElement("img");
+      favicon.src = tab.favIconUrl || "";
+      favicon.alt = "";
+      favicon.width = 16;
+      favicon.height = 16;
+      favicon.style.verticalAlign = "middle";
+      favicon.style.marginRight = "6px";
 
-    link.onclick = async (e) => {
-      e.preventDefault();
-      await chrome.tabs.update(tab.id, { active: true });
-      await chrome.windows.update(tab.windowId, { focused: true });
-    };
+      const link = document.createElement("a");
+      link.textContent = tab.title;
+      link.href = "#";
+      link.onclick = async (e) => {
+        e.preventDefault();
+        await chrome.tabs.update(tab.id, { active: true });
+        await chrome.windows.update(tab.windowId, { focused: true });
+      };
 
-    const closeBtn = document.createElement("button");
-    closeBtn.textContent = "X";
-    closeBtn.onclick = () => chrome.tabs.remove(tab.id);
+      const closeBtn = document.createElement("button");
+      closeBtn.textContent = "X";
+      closeBtn.onclick = () => chrome.tabs.remove(tab.id);
 
-    li.appendChild(link);
-    li.appendChild(closeBtn);
-    tabList.appendChild(li);
-  });
+      li.appendChild(favicon);
+      li.appendChild(link);
+      li.appendChild(closeBtn);
+      tabList.appendChild(li);
+    });
+  }
+
+  toggleBtn.onclick = async () => {
+    showAllWindows = !showAllWindows;
+    searchInput.value = ""; // Clear search input on toggle
+    await loadTabs();
+  };
+
+  async function loadTabs() {
+    if (showAllWindows) {
+      tabs = await chrome.tabs.query({});
+      toggleBtn.textContent = "Show Current Only";
+    } else {
+      const currentWindow = await chrome.windows.getCurrent();
+      tabs = await chrome.tabs.query({ currentWindow: true });
+      toggleBtn.textContent = "Show All Windows";
+    }
+    renderTabs();
+  }
 
   searchInput.addEventListener("input", () => {
     const filter = searchInput.value.toLowerCase();
@@ -47,4 +76,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   });
 
+  // Initial render
+  renderTabs();
 });
