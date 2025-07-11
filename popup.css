@@ -8,6 +8,13 @@ body {
   max-width: 300px;
 }
 
+.controls {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  margin-bottom: 10px;
+}
+
 input {
   width: 50%;
   padding: 8px;
