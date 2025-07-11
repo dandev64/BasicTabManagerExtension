@@ -3,6 +3,19 @@ body {
   margin: 10px;
   background: #121212;
   color: #e0e0e0;
+  width: 300px;
+  min-width: 300px;
+  max-width: 300px;
+}
+
+input {
+  width: 50%;
+  padding: 8px;
+  margin-bottom: 10px;
+  border: none;
+  border-radius: 5px;
+  background: #111111;
+  color: #e0e0e0;
 }
 
 h2 {
@@ -31,7 +44,7 @@ a {
 }
 
 button {
-  margin-left: 10px;
+  margin-left: 5px;
   background: #b71c1c;
   color: white;
   border: none;
