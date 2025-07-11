@@ -2,7 +2,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   const tabList = document.getElementById("tab-list");
   const searchInput = document.getElementById("search");
 
-  const tabs = await chrome.tabs.query({ currentWindow: true });
+  const tabs = await chrome.tabs.query({});
+  
 
   tabs.forEach(tab => {
     const li = document.createElement("li");
@@ -10,7 +11,13 @@ document.addEventListener("DOMContentLoaded", async () => {
     const link = document.createElement("a");
     link.textContent = tab.title;
     link.href = "#";
-    link.onclick = () => chrome.tabs.update(tab.id, { active: true });
+    // link.onclick = () => chrome.tabs.update(tab.id, { active: true });
+
+    link.onclick = async (e) => {
+      e.preventDefault();
+      await chrome.tabs.update(tab.id, { active: true });
+      await chrome.windows.update(tab.windowId, { focused: true });
+    };
 
     const closeBtn = document.createElement("button");
     closeBtn.textContent = "X";
@@ -25,9 +32,14 @@ document.addEventListener("DOMContentLoaded", async () => {
     const filter = searchInput.value.toLowerCase();
     const items = tabList.getElementsByTagName("li");
 
-    Array.from(items).forEach(item => {
+    Array.from(items).forEach((item, idx) => {
       const link = item.getElementsByTagName("a")[0];
-      if (link.textContent.toLowerCase().includes(filter)) {
+      const tab = tabs[idx];
+      const titleMatch = link.textContent.toLowerCase().includes(filter);
+      const ytMatch = filter === "yt" && tab.url && tab.url.includes("youtube.com");
+      const fbMatch = filter === "fb" && tab.url && tab.url.includes("facebook.com");
+
+      if (titleMatch || ytMatch || fbMatch) {
         item.style.display = "";
       } else {
         item.style.display = "none";
