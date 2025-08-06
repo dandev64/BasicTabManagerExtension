@@ -30,7 +30,11 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       const closeBtn = document.createElement("button");
       closeBtn.textContent = "X";
-      closeBtn.onclick = () => chrome.tabs.remove(tab.id);
+      closeBtn.onclick = async () => {
+      await chrome.tabs.remove(tab.id);
+      li.remove(); // Remove the tab's list item from the popup
+    };
+      
 
       li.appendChild(favicon);
       li.appendChild(link);
